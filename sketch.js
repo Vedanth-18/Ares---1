@@ -1,4 +1,4 @@
-
+//Remember to shrink the canvas size by 100 units at the end to ensure that it fits into every screen
 
 //Matter JS - Declaration vars
 const Engine = Matter.Engine;
@@ -23,7 +23,6 @@ var captureframeCount; //Capturing frameCount to use it in game at several insta
 var cameraPosition; //Getting camera position - Not in use currently - Testing purpose
 var boostCounter;
 var booster_text;
-var movement;
 
 //Terrain Assests - Vars
 var Mterrain; //Var to import 3d terrain model as obj object
@@ -41,7 +40,8 @@ var Tpos4 = -600; //Var to calculate buffer terrain position(z-axis) of successi
 var Tpos5 = -800; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
 var element;
 var textGraphic;
-
+var AcknowledgeS; //Variable to acknowledge the beginning of game[AcknowlegeS = 0, before game starts. AcknowledgeS = 1, to mark the start of the game].
+var moveMag; //movementMagnitude[For both rover and camera]
 //Preload function
 function preload(){
   Mterrain = loadModel("terrain.obj", true);
@@ -54,68 +54,55 @@ function preload(){
 
 //Setup function
 function setup() {
-
   //MatterJS_SETUP
   engine = Engine.create();
   world = engine.world;
- 
   //Initialiasing gamestate
   gameState = 0;
-
   //CreatingCanvas - WEBGL Mode
-  canvas3d = createCanvas(displayWidth, displayHeight, WEBGL);
-  
+  canvas3d = createCanvas(displayWidth - 100, displayHeight - 100 , WEBGL);
   //Cam
-  cam = createCamera(0, 0, 0
-    );
-        
+  cam = createCamera(0, 0, 0);   
   //DebugModeON
   //debugMode(2100, 10,0 ,0, 0, 200, 0, 0, 0);
-
   //Initializing value of rover position
   roverPosition = 21;
-
   //Initializing value for counts in gamestate 1
   captureframeCount = 0;
-
   //Initialising frameR
   frameR = 0;
-
   //Initialising terrainFrameCount
   terrainCount = 0;
-
   //Defining n
   n = 5;
-
   ///Defining boostCounter
   boostCounter = 20;
-
   //Creating Graphics
   //booster_text = createGraphic(200, 200);
+  //Initialising roverPosition
+  roverPosition = 0;
+  //Initialising AcknowledgeS to 0[Meaning - game didn't start]
+  AcknowledgeS = 0;
 }
 
 function draw() {  
-  //scale(20);
-  
   //Console.Log
     //console.log("GameState : " + gameState);
     //console.log("frameR: " + frameR);
     //console.log("n = " + n);
-    //console.log("Tpos = " +  Tpos);
+    //console.log("Tpos = " + Tpos);
     //console.log("Tpos2 = " + Tpos2);
     //console.log("Booster Count Log: " + boostCounter);
-    console.log("roverPosition: " + roverPosition);
+    //console.log("roverPosition: " + roverPosition);
 
-  //Setting background
-  //BackgroundColour
-  //background(textureImg);
+  //Setting background - Colour
   background("BLACK");
   //Dashboard Screen
   if(gameState === 0){
     push();
     texture(bg);
     noStroke();
-    plane(displayWidth, displayHeight);
+    plane(displayWidth - 100, displayHeight - 100);
     pop();
   }
 
@@ -132,6 +119,8 @@ function draw() {
 
     //Calling createTerrains() function to create the terrain in the game
     createTerrains();
+
+    //Initialising moveMag//
     
     //Text - Embedding in a plane
     //text and its attributes
@@ -143,19 +132,14 @@ function draw() {
     //texture(booster_text);
     //plane(200, 200);
 
-    // //Trial..
-    // push();
-    // scale(1);
-    // texture(img);
-    // model(element);
-    // pop();
-
     //OrbitalControl
     orbitControl(1,1,1);
   
     //Defining frameR
     if(keyIsDown(UP_ARROW) && frameCount%1 === 0){
       frameR++;
+      //Assigning frameR to moveMag with defined conditions
+      moveMag = [-(frameR*15)];
     }
 
     //MterrainD - Properties of terrain - DEFAULT
@@ -180,18 +164,27 @@ function draw() {
     };
 
     //Camera movement
+    //Initialising movement when  key "S" is pressed[Aligining camera relative to rover's position]
+    if(keyIsDown(83)){
+      cam.setPosition(0, 0,[-(frameR*15)]);
+      AcknowledgeS = 1;
+    }
+    //Movement of camera when Up Arrow key is pressed
     if(keyIsDown(UP_ARROW)){
-      cam.setPosition(0, 0, -(frameR*15));
+      cam.setPosition(0, 0, [-(frameR*15)]);
       //----//cam.move(0, 0, -4);
     }
 
      //MarsRover     
-     //Setting rover position
-     //roverPosition = Tpos -200;
-     //Mars rover - GIF
      push();
+     //Starting the game and changing rover position to its beginning when letter "S" is pressed[Aligigning rover to the  initial camera movement/position]
+     if(keyIsDown(83)){
+      roverPosition = (-60);
+      AcknowledgeS = 1;
+    }
+    push();
      if(keyIsDown(UP_ARROW)){
-      roverPosition = Tpos;
+       roverPosition = (roverPosition) - 1.5;
      }
      scale(10);
      texture(rover);
@@ -199,11 +192,7 @@ function draw() {
      translate(0, 0, roverPosition);
      plane(25, 19);
      pop();
-
-     
-      
-    //MatterJS - Creating body
-    //bodyOne = new Sample(displayWidth/2-683, displayHeight/2-420, 160, 140);
+     pop();
 
     // if(keyIsDown(66) && boostCounter > 0 && frameCount%8 === 0){
     //   boostCounter = boostCounter - 1;
