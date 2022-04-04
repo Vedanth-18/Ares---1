@@ -263,7 +263,7 @@ function createTerrains(){
        //Terrain colour
        fill(255, 102, 94);
        //Loading terrain model..
-       //texture(textureImg);
+       texture(textureImg);
        model(Mterrain);
        pop();
 
