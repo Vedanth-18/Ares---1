@@ -1,86 +1,62 @@
 //Remember to shrink the canvas size by 100 units at the end to ensure that it fits into every screen
 
-//Matter JS - Declaration vars
-const Engine = Matter.Engine;
-const World = Matter.World;
-const Bodies = Matter.Bodies;
-const Body = Matter.Body;
-const Constraint = Matter.Constraint;
-var engine, world;
-
 //Game variables
 var gameState; //Gamestate is to change the initial 2d dashboard to 3d environment and back to 2d plane at game end
 var cam; //Creating camera for the 3d workspace
-var bodyOne;
 var rover; //Var to load rover GIF.
 var bg; //Var to load dashboard background GIF.
-var canvas2d; //Not in use currently - Testing purpose
-var canvas3d; //Not in use currently - Testing purpose
-var sprite; //Not in use currently - Testing purpose
-var textFont1; //Not in use currently - Testing purpose
-var roverPosition; //Var to assign rover position
-var captureframeCount; //Capturing frameCount to use it in game at several instances
-var cameraPosition; //Getting camera position - Not in use currently - Testing purpose
-var boostCounter;
-var booster_text;
+var canvas3d; //Var to create the 3d WEBGL canvas
+var roverPositionZ; //Var to assign rover position over Z axis
+var roverPositionX; //Var to assign rover position over X axis
 
 //Terrain Assests - Vars
-var Mterrain; //Var to import 3d terrain model as obj object
-var textureImg;
+var M_Terrain; //Var to import 3d terrain model as obj object
+var textureImg; //Var to aplly texture for the terrain
 
 //Terrain Creation - Vars
 var frameR; //Specialised Counting system for creating terrain synchronously with regard frameCount..
-var n; //n = terrainCount .. Records number of terrains created
-const d = -200; // Not in use - Testing purpose - A fixed adding value to the z(z-axis) position of the successive terrains
-var a = -200; //Not in use - Testing purpose -The position(z-axis) of terrain to be created. Initial value = "-200".  of default terrain is "0". a(n) = a + (n-1)d
 var Tpos = 0; //Var to calculate terrain position(z-axis) of successive terrains
 var Tpos2 = -200; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
 var Tpos3 = -400; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
 var Tpos4 = -600; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
 var Tpos5 = -800; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
-var element;
-var textGraphic;
 var AcknowledgeS; //Variable to acknowledge the beginning of game[AcknowlegeS = 0, before game starts. AcknowledgeS = 1, to mark the start of the game].
 var moveMag; //movementMagnitude[For both rover and camera]
+
+//Texts - Var
+var textGraphic;
+var textFont1; 
+var booster_text;
+
 //Preload function
 function preload(){
-  Mterrain = loadModel("terrain.obj", true);
-  rover = loadImage("rover.gif");
-  bg = loadImage("Sample.webp");
-  textFont1 = loadFont("textFont1.ttf")
-  textureImg = loadImage("texture1.jpg");
-  element = loadModel("elements.obj");
+  M_Terrain = loadModel("Assets/3d Object/terrain.obj", true);
+  rover = loadImage("Assets/Image/rover.gif");
+  bg = loadImage("Assets/Image/Sample.webp");
+  textureImg = loadImage("Assets/Image/texture1.jpg");
+  textFont1 = loadFont("Assets/Text/textFont1.ttf")
 }
 
 //Setup function
 function setup() {
-  //MatterJS_SETUP
-  engine = Engine.create();
-  world = engine.world;
   //Initialiasing gamestate
   gameState = 0;
   //CreatingCanvas - WEBGL Mode
-  canvas3d = createCanvas(displayWidth - 100, displayHeight - 100 , WEBGL);
+  canvas3d = createCanvas(displayWidth, displayHeight, WEBGL);
   //Cam
   cam = createCamera(0, 0, 0);   
   //DebugModeON
   //debugMode(2100, 10,0 ,0, 0, 200, 0, 0, 0);
   //Initializing value of rover position
   roverPosition = 21;
-  //Initializing value for counts in gamestate 1
-  captureframeCount = 0;
   //Initialising frameR
   frameR = 0;
-  //Initialising terrainFrameCount
-  terrainCount = 0;
-  //Defining n
-  n = 5;
-  ///Defining boostCounter
-  boostCounter = 20;
   //Creating Graphics
   //booster_text = createGraphic(200, 200);
-  //Initialising roverPosition
-  roverPosition = 0;
+  //Initialising roverPositionZ
+  roverPositionZ = 21;
+  //Initialising roverPositionX
+  roverPositionX = 0;
   //Initialising AcknowledgeS to 0[Meaning - game didn't start]
   AcknowledgeS = 0;
 }
@@ -89,9 +65,7 @@ function draw() {
   //Console.Log
     //console.log("GameState : " + gameState);
     //console.log("frameR: " + frameR);
-    //console.log("n = " + n);
     //console.log("Tpos = " + Tpos);
-    //console.log("Tpos2 = " + Tpos2);
     //console.log("Booster Count Log: " + boostCounter);
     //console.log("roverPosition: " + roverPosition);
 
@@ -102,13 +76,8 @@ function draw() {
     push();
     texture(bg);
     noStroke();
-    plane(displayWidth - 100, displayHeight - 100);
+    plane(displayWidth, displayHeight);
     pop();
-  }
-
-  //Capturing counts when gamestate === 0 to reset camera and the rover
-  if(gameState === 1 && frameCount%1.5 === 0){
-    captureframeCount = captureframeCount + 1;
   }
 
   //GAME SCENE
@@ -119,8 +88,6 @@ function draw() {
 
     //Calling createTerrains() function to create the terrain in the game
     createTerrains();
-
-    //Initialising moveMag//
     
     //Text - Embedding in a plane
     //text and its attributes
@@ -142,19 +109,18 @@ function draw() {
       moveMag = [-(frameR*15)];
     }
 
-    //MterrainD - Properties of terrain - DEFAULT
+    //M_TerrainD - Properties of terrain - DEFAULT
     //push();
     //scale(6);
     //translate(0,0,0);
     //noStroke();
     //fill(255, 102, 94);
     //texture(img);
-    //model(Mterrain);
+    //model(M_Terrain);
     //pop();
 
-    if(frameR > 0 && frameR%200 === 0){
-       //Updating the number of terrains created
-       n = n + 5;
+    //Calculating terrain positions
+    if(frameR > 0 && frameR%220 === 0){
        //Calculating Tposition
        Tpos =  Tpos  - 200;
        Tpos2 = Tpos  - 200;
@@ -166,64 +132,52 @@ function draw() {
     //Camera movement
     //Initialising movement when  key "S" is pressed[Aligining camera relative to rover's position]
     if(keyIsDown(83)){
-      cam.setPosition(0, 0,[-(frameR*15)]);
+      cam.setPosition(0, 65, [-(frameR*15)]);
       AcknowledgeS = 1;
     }
     //Movement of camera when Up Arrow key is pressed
     if(keyIsDown(UP_ARROW)){
-      cam.setPosition(0, 0, [-(frameR*15)]);
+      cam.setPosition(0, 65, [-(frameR*15)]);
       //----//cam.move(0, 0, -4);
     }
 
-     //MarsRover     
-     push();
-     //Starting the game and changing rover position to its beginning when letter "S" is pressed[Aligigning rover to the  initial camera movement/position]
-     if(keyIsDown(83)){
-      roverPosition = (-60);
+    //MarsRover     
+    push();
+    //Starting the game and changing rover position to its beginning when letter "S" is pressed[Aligigning rover to the  initial camera movement/position]
+    if(keyIsDown(83)){
+      roverPositionZ = (-60);
       AcknowledgeS = 1;
     }
     push();
-     if(keyIsDown(UP_ARROW)){
-       roverPosition = (roverPosition) - 1.5;
-     }
-     scale(10);
-     texture(rover);
-     noStroke();
-     translate(0, 0, roverPosition);
-     plane(25, 19);
-     pop();
-     pop();
-
-    // if(keyIsDown(66) && boostCounter > 0 && frameCount%8 === 0){
-    //   boostCounter = boostCounter - 1;
-    // }
-    //  if(boostCounter < 20 && frameCount%50 === 0 ){
-    //    boostCounter = boostCounter + 1;
-    //  }
-    //Camera movement(front) when key is pressed and stop when released
-    
-    // //Camera movement(right) when key is pressed and stop when released
-    // if(keyIsDown(RIGHT_ARROW)){
-    //   cam.setPosition(0, 0, -(frameR*12));
-    //   //cam.move(0, 0, -4);
-    // }
-    // //Camera movement(left) when key is pressed and stop when released
-    // if(keyIsDown(LEFT_ARROW)){
-    //   cam.setPosition(0, 0, -(frameR*19));
-    // }
+    if(keyIsDown(UP_ARROW)){
+      roverPositionZ = (roverPositionZ) - 3.75;
+    }
+    if(keyIsDown(RIGHT_ARROW) && keyIsDown(UP_ARROW)){
+      roverPositionX = roverPositionX + 0.2; //Right movement
+    }
+    if(keyIsDown(LEFT_ARROW) && keyIsDown(UP_ARROW)){
+      roverPositionX = roverPositionX - 0.2; //Left movement
+    }
+    scale(4);
+    texture(rover);
+    noStroke();
+    translate(roverPositionX, 23, roverPositionZ);
+    plane(25, 19);
+    pop();
+    pop();
   }
 }
 
 //MousePressed function - Change gameState
-  function mousePressed(){
+function mousePressed(){
     console.log("Pressed")
     gameState = 1;
-  }
+}
 
 //Terrain creation function - Called in main();
 function createTerrains(){
  //Terrain creation(MainTerrain)
-       //Mterrain(n) - Properties of terrain(n)
+       //M_Terrain(n) - Properties of terrain(n)
        push();
        //Describing the size of the terrain
        scale(15);
@@ -236,11 +190,11 @@ function createTerrains(){
        fill(255, 102, 94);
        //Loading terrain model..
        texture(textureImg);
-       model(Mterrain);
+       model(M_Terrain);
        pop();
 
     //Terrain creation(BufferTerrain1)
-       //Mterrain(n) - Properties of terrain(n) - BufferTerrain1..
+       //M_Terrain(n) - Properties of terrain(n) - BufferTerrain1..
        push();
        //Describing the size of the terrain
        scale(15);
@@ -253,11 +207,11 @@ function createTerrains(){
        fill(255, 102, 94);
        //Loading terrain model..
        texture(textureImg);
-       model(Mterrain);
+       model(M_Terrain);
        pop();
 
     //Terrain creation(BufferTerrain2)
-       //Mterrain(n) - Properties of terrain(n) - BufferTerrain2..
+       //M_Terrain(n) - Properties of terrain(n) - BufferTerrain2..
        push();
        //Describing the size of the terrain
        scale(15);
@@ -269,11 +223,11 @@ function createTerrains(){
        //Terrain colour
        fill(255, 102, 94);
        texture(textureImg);
-       model(Mterrain);
+       model(M_Terrain);
        pop();
 
     //Terrain creation(BufferTerrain3)
-       //Mterrain(n) - Properties of terrain(n) - BufferTerrain3..
+       //M_Terrain(n) - Properties of terrain(n) - BufferTerrain3..
        push();
        //Describing the size of the terrain
        scale(15);
@@ -286,11 +240,11 @@ function createTerrains(){
        fill(255, 102, 94);
        //Loading terrain model..
        texture(textureImg);
-       model(Mterrain);
+       model(M_Terrain);
        pop();
 
     //Terrain creation(BufferTerrain4)
-       //Mterrain(n) - Properties of terrain(n) - BufferTerrain4..
+       //M_Terrain(n) - Properties of terrain(n) - BufferTerrain4..
        push();
        //Describing the size of the terrain
        scale(15);
@@ -303,7 +257,7 @@ function createTerrains(){
        fill(255, 102, 94);
        //Loading terrain model..
        texture(textureImg);
-       model(Mterrain);
+       model(M_Terrain);
        pop();
 }
 
@@ -394,83 +348,83 @@ function createTerrains(){
   //     return false;
   //   }
   //}
-  // //Mterrain3 - Properties of terrain
+  // //M_Terrain3 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-400);
     // stroke("BLUE");
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
 
-    // //Mterrain4 - Properties of terrain
+    // //M_Terrain4 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-600);
     // stroke("Green");
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
 
-    // //Mterrain5 - Properties of terrain
+    // //M_Terrain5 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-800);
     // stroke("RED");
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
-    //   //Mterrain6 - Properties of terrain
+    //   //M_Terrain6 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-1000);
     // stroke(0);
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
   
 
     /////
-    // //MterrainD2 - Properties of terrain
+    // //M_TerrainD2 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-200);
     // stroke("Yellow");
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
 
-    // //Mterrain3 - Properties of terrain
+    // //M_Terrain3 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-400);
     // stroke("BLUE");
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
 
-    // //Mterrain4 - Properties of terrain
+    // //M_Terrain4 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-600);
     // stroke("Green");
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
 
-    // //Mterrain5 - Properties of terrain
+    // //M_Terrain5 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-800);
     // stroke("RED");
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
-    // //Mterrain6 - Properties of terrain
+    // //M_Terrain6 - Properties of terrain
     // push();
     // scale(6);
     // translate(0,0,-1000);
     // stroke(0);
     // fill(255, 102, 94);
-    // model(Mterrain);
+    // model(M_Terrain);
     // pop();
