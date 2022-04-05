@@ -1,5 +1,4 @@
-//Remember to shrink the canvas size by 100 units at the end to ensure that it fits into every screen
-
+//Obstacles, Sounnd, Booster
 //Game variables
 var gameState; //Gamestate is to change the initial 2d dashboard to 3d environment and back to 2d plane at game end
 var cam; //Creating camera for the 3d workspace
@@ -8,6 +7,7 @@ var bg; //Var to load dashboard background GIF.
 var canvas3d; //Var to create the 3d WEBGL canvas
 var roverPositionZ; //Var to assign rover position over Z axis
 var roverPositionX; //Var to assign rover position over X axis
+var controlsPanel; //Var to load the controls icon image
 
 //Terrain Assests - Vars
 var M_Terrain; //Var to import 3d terrain model as obj object
@@ -25,7 +25,6 @@ var AcknowledgeS; //Variable to acknowledge the beginning of game[AcknowlegeS = 
 //Texts - Var
 var GenralT_1; 
 var ARESfont;
-var booster_text;
 
 //Preload function
 function preload(){
@@ -35,6 +34,7 @@ function preload(){
   textureImg = loadImage("Assets/Image/texture1.jpg");
   GenralT_1 = loadFont("Assets/Text/Ares.otf")  //Free commercial license
   ARESfont = loadFont("Assets/Text/Ares.ttf");  //Free commercial license
+  controlPanel = loadImage("Assets/Image/controls.png");
 }
 
 //Setup function
@@ -58,6 +58,9 @@ function setup() {
 }
 
 function draw() {  
+  //CONSOLE LOG
+  console.log("MouseX: " + mouseX);
+  console.log("MouseY: " + mouseY);
   //Setting background - Colour
   background("BLACK");
 
@@ -75,6 +78,9 @@ function draw() {
     //Smooth
     smooth();
 
+    //orbitControl
+    orbitControl();
+
     //Calling createTerrains() function to create the terrains in the game
     createTerrains();
     
@@ -84,15 +90,25 @@ function draw() {
     textAlign(CENTER, CENTER);
     textSize(34);
     fill(100 + sin(frameCount*0.1) * 255);
-    text("Press 'S' to start", 0, -160);
+    text("Press 'C' for controls", 0, -163);
     pop();
-
+    //Text2
+    push();
+    textFont(GenralT_1);
+    textAlign(CENTER, CENTER);
+    textSize(34);
+    fill(50 + sin(frameCount*0.1) * 255);
+    text("Press 'S' to start", 0, -125);
+    pop();
+    //MainText
     push();
     textFont(ARESfont);
     textAlign(CENTER, CENTER);
     textSize(100);
-    text("A R E S", 0, -250);
+    text("A  R  E  S", 0, -250);
     pop();
+
+    
 
     //Defining frameR
     if(keyIsDown(UP_ARROW) && frameCount%1 === 0 && AcknowledgeS === 1){
@@ -118,10 +134,10 @@ function draw() {
     if(keyIsDown(UP_ARROW) && AcknowledgeS === 1){
       roverPositionZ = (roverPositionZ) - 3.75;
     }
-    if(keyIsDown(RIGHT_ARROW) && keyIsDown(UP_ARROW) && AcknowledgeS === 1){
+    if(keyIsDown(RIGHT_ARROW) && keyIsDown(UP_ARROW) && AcknowledgeS === 1 && roverPositionX<55){
       roverPositionX = roverPositionX + 0.2; //Right movement
     }
-    if(keyIsDown(LEFT_ARROW) && keyIsDown(UP_ARROW) && AcknowledgeS === 1){
+    if(keyIsDown(LEFT_ARROW) && keyIsDown(UP_ARROW) && AcknowledgeS === 1 && roverPositionX>(-55)){
       roverPositionX = roverPositionX - 0.2; //Left movement
     }
     scale(4);
@@ -131,6 +147,13 @@ function draw() {
     plane(25, 19);
     pop();
     pop();
+    }
+    //Movement Controls - Panel
+    if(AcknowledgeS === 0 && keyIsDown(67)){
+    noStroke();
+    texture(controlPanel);
+    translate(0, 0, 300);
+    plane(400, 300);
     }
 }
 
