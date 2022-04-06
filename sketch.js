@@ -8,6 +8,17 @@ var canvas3d; //Var to create the 3d WEBGL canvas
 var roverPositionZ; //Var to assign rover position over Z axis
 var roverPositionX; //Var to assign rover position over X axis
 var controlsPanel; //Var to load the controls icon image
+var ob1; //Position of obstacles
+var ob2; //Position of obstacles
+var ob3; //Position of obstacles
+var ob4; //Position of obstacles
+var ob5; //Position of obstacles
+var model2; //Var to load obstacle model
+var mx1; //Var to assign X position of obstacles
+var mx2; //Var to assign X position of obstacles
+var mx3; //Var to assign X position of obstacles
+var mx4; //Var to assign X position of obstacles
+var mx5; //Var to assign X position of obstacles
 
 //Terrain Assests - Vars
 var M_Terrain; //Var to import 3d terrain model as obj object
@@ -20,6 +31,7 @@ var Tpos2 = -200; //Var to calculate buffer terrain position(z-axis) of successi
 var Tpos3 = -400; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
 var Tpos4 = -600; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
 var Tpos5 = -800; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
+var Tpos6 = -1000; //Var to calculate buffer terrain position(z-axis) of successive buffer terrains
 var AcknowledgeS; //Variable to acknowledge the beginning of game[AcknowlegeS = 0, before game starts. AcknowledgeS = 1, to mark the start of the game].
 
 //Texts - Var
@@ -30,11 +42,12 @@ var ARESfont;
 function preload(){
   M_Terrain = loadModel("Assets/3d Object/terrain.obj", true);
   rover = loadImage("Assets/Image/rover.gif");
-  bg = loadImage("Assets/Image/Sample.webp");
+  bg = loadImage("Assets/Image/Ares.webp");
   textureImg = loadImage("Assets/Image/texture1.jpg");
   GenralT_1 = loadFont("Assets/Text/Ares.otf")  //Free commercial license
   ARESfont = loadFont("Assets/Text/Ares.ttf");  //Free commercial license
-  controlPanel = loadImage("Assets/Image/controls.png");
+  controlsPanel = loadImage("Assets/Image/controls.jpg");
+  model2 = loadModel("Assets/3d Object/T2.obj");
 }
 
 //Setup function
@@ -55,12 +68,17 @@ function setup() {
   roverPositionX = 0;
   //Initialising AcknowledgeS to 0[Meaning - game didn't start]
   AcknowledgeS = 0;
+  //Initialising object position
+  ob1 = - 1000;
+  //Initialising X positions of the obstacles
+  mx1 = -80; 
+  mx2 = 1;
+  mx3 = -200;
+  mx4 = 100;
+  mx5 = -100;
 }
 
 function draw() {  
-  //CONSOLE LOG
-  console.log("MouseX: " + mouseX);
-  console.log("MouseY: " + mouseY);
   //Setting background - Colour
   background("BLACK");
 
@@ -79,25 +97,28 @@ function draw() {
     smooth();
 
     //orbitControl
-    orbitControl();
+    //orbitControl();
+
+    //Calling spawnObstacles() function to spawn the obstacles on the terrain
+    spawnObstacles();
 
     //Calling createTerrains() function to create the terrains in the game
     createTerrains();
-    
+
     //Text
     push();
     textFont(GenralT_1);
     textAlign(CENTER, CENTER);
     textSize(34);
-    fill(100 + sin(frameCount*0.1) * 255);
-    text("Press 'C' for controls", 0, -163);
+    fill(100 + sin(frameCount*0.06) * 255);
+    text("Hold on letter 'C' for controls", 0, -163);
     pop();
     //Text2
     push();
     textFont(GenralT_1);
     textAlign(CENTER, CENTER);
     textSize(34);
-    fill(50 + sin(frameCount*0.1) * 255);
+    fill(50 + sin(frameCount*0.06) * 255);
     text("Press 'S' to start", 0, -125);
     pop();
     //MainText
@@ -107,8 +128,6 @@ function draw() {
     textSize(100);
     text("A  R  E  S", 0, -250);
     pop();
-
-    
 
     //Defining frameR
     if(keyIsDown(UP_ARROW) && frameCount%1 === 0 && AcknowledgeS === 1){
@@ -146,12 +165,12 @@ function draw() {
     translate(roverPositionX, 23, roverPositionZ);
     plane(25, 19);
     pop();
-    pop();
+    pop();      
     }
     //Movement Controls - Panel
-    if(AcknowledgeS === 0 && keyIsDown(67)){
+    if(AcknowledgeS === 0 && keyIsDown(67)){  //Shows up when the key "C" is pressed
     noStroke();
-    texture(controlPanel);
+    texture(controlsPanel);
     translate(0, 0, 300);
     plane(400, 300);
     }
@@ -166,13 +185,14 @@ function mousePressed(){
 //Terrain creation function - Called in main();
 function createTerrains(){
   //Calculating terrain positions
-  if(frameR > 0 && frameR%200 === 0){
+  if(frameR > 0 && frameR%210 === 0){
     //Calculating Tposition
     Tpos =  Tpos  - 200;
     Tpos2 = Tpos  - 200;
     Tpos3 = Tpos2 - 200;
     Tpos4 = Tpos3 - 200;
     Tpos5 = Tpos4 - 200;
+    Tpos6 = Tpos5 - 200;
  }
 
  //Terrain creation(MainTerrain)
@@ -182,10 +202,8 @@ function createTerrains(){
        scale(15);
        //Assigning position to the terrain(z-axis position) - To appear like being continous
        translate(0,0,Tpos);
+       //Removing strokes on the terrain to make it look plain
        noStroke();
-       //stroke(219, 101, 101, 0.27);
-       //Terrain colour
-       fill(255, 102, 94);
        //Applying mars like texture to the 3d model
        texture(textureImg);
        //Loading terrain model..
@@ -222,8 +240,8 @@ function createTerrains(){
        model(M_Terrain);
        pop();
 
-    //Terrain creation(BufferTerrain4)
-    //M_Terrain(n) - Properties of terrain(n) - BufferTerrain3..
+    //Terrain creation(BufferTerrain6)
+    //M_Terrain(n) - Properties of terrain(n) - BufferTerrain4..
        push();
        scale(15);
        translate(0,0,Tpos5);
@@ -232,7 +250,82 @@ function createTerrains(){
        texture(textureImg);
        model(M_Terrain);
        pop();
+
+    //Terrain creation(BufferTerrain5)
+    //M_Terrain(n) - Properties of terrain(n) - BufferTerrain5..
+    push();
+    scale(15);
+    translate(0,0,Tpos6);
+    noStroke();
+    fill(255, 102, 94);
+    texture(textureImg);
+    model(M_Terrain);
+    pop();
 }
+
+//Function for Spawing the obstacles around on the terrain
+ function spawnObstacles(){
+  if(frameR > 0 && frameR%390 === 0){
+   //Calculating object position
+   ob1 = ob1 - 6000
+   }
+   ob2 = ob1 - 2000;
+   ob3 = ob2 - 2000;
+   ob4 = ob3 - 2000;
+   ob5 = ob4 - 2000;
+  
+if(frameR>0 && frameR%390 === 0){
+  mx1 = (random(-250, -50)); 
+  mx2 = (random(0, -150));
+  mx3 = (random(50, 250));
+  mx4 = (random(0, 250));
+  mx5 = (random(-250, -100));
+}
+//for(var i = 0; i<1; i++){
+  push();
+  fill("WHITE");
+  noStroke();
+  translate(mx1, 80, ob1);
+  model(model2);
+  pop();
+ 
+  push();
+  fill("WHITE");
+  noStroke();
+  translate(mx2, 80, ob2);
+  model(model2);
+  pop();
+ 
+  push();
+  fill("WHITE");
+  noStroke();
+  translate(mx3, 80, ob3);
+  model(model2);
+  pop();
+ 
+  push();
+  fill("WHITE");
+  noStroke();
+  translate(mx4, 80, ob4);
+  model(model2);
+  pop();
+ 
+  push();
+  fill("WHITE");
+  noStroke();
+  translate(mx5, 80, ob5);
+  model(model2);
+  pop();
+//}
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -408,4 +501,50 @@ function createTerrains(){
     //DebugModeON
   //debugMode(2100, 10,0 ,0, 0, 200, 0, 0, 0);
   //Camera movement
-  //----//cam.move(0, 0, -4);
+
+  //Spawning boosters
+// function boosterSpawn(){
+//   if(AcknowledgeS === 1){
+//     translate(random(-55, 55), random(Tpos, Tpos3), 0);
+//     plane(100, 100);
+//   }
+// }
+// function trial(){
+//   ob1 = -200;
+//   ob2 = ob1 - 250;
+//   ob3 = ob2 - 250;
+//   ob4 = ob3 - 250;
+//   ob5 = ob4 - 250;
+//   //
+//   push();
+//   translate(0, -20, ob1);
+//   fill("WHITE");
+//   plane(25, 19);
+//   pop();
+
+//   push();
+//   translate(0, -20, ob2);
+//   fill("WHITE");
+//   plane(25, 19);
+//   pop();
+
+//   push();
+//   translate(0, -20, ob3);
+//   fill("WHITE");
+//   plane(25, 19);
+//   pop();
+
+//   push();
+//   translate(0, -20, ob4);
+//   fill("WHITE");
+//   plane(25, 19);
+//   pop();
+
+//   push();
+//   translate(0, -20, ob5);
+//   fill("WHITE");
+//   plane(25, 19);
+//   pop();
+  
+// }
+  
