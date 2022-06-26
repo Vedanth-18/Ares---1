@@ -56,11 +56,11 @@ function preload(){
   rover = loadImage("Assets/Image/rover.gif");
   bg = loadImage("Assets/Image/Ares.webp");
   textureImg = loadImage("Assets/Image/texture1.jpg");
-  textureImg2 = loadImage("Assets/Image/texture2.jpg");
+  textureImg2 = loadImage("Assets/Image/obst_texture.jpg");
   GenralT_1 = loadFont("Assets/Text/Ares.otf")  //Free commercial license
   ARESfont = loadFont("Assets/Text/Ares.ttf");  //Free commercial license
   controlsPanel = loadImage("Assets/Image/controls.jpg");
-  model2 = loadModel("Assets/3d Object/barricade.obj");
+  model2 = loadModel("Assets/3d Object/obstacleD.obj");
   //model2 = loadModel("Assets/3d Object/T2.obj");
 }
 
@@ -327,18 +327,18 @@ if(frameR>0 && frameR%140 === 0){
   push();
   scale(15);
   fill("WHITE");
-  translate(mx1, 17.9, ob1);
+  translate(mx1, 8, ob1);
   noStroke();
-  //texture(textureImg);
+  texture(textureImg2);
   model(model2);
   pop();
  
   push();
   scale(15);
   //fill("WHITE");
-  translate(mx2, 17.9, ob2);
+  translate(mx2, 8, ob2);
   noStroke();
-  //texture(textureImg);
+  texture(textureImg2);
   model(model2);
   pop();
  
@@ -346,7 +346,8 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx3, 17.9, ob3);
+  translate(mx3, 8, ob3);
+  texture(textureImg2);
   model(model2);
   pop();
  
@@ -354,7 +355,8 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx4, 17.9, ob4);
+  translate(mx4, 8, ob4);
+  texture(textureImg2);
   model(model2);
   pop();
  
@@ -362,7 +364,8 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx5, 17.9, ob5);
+  translate(mx5, 8, ob5);
+  texture(textureImg2);
   model(model2);
   pop();
 
@@ -370,7 +373,8 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx6, 17.9, ob6);
+  translate(mx6, 8, ob6);
+  texture(textureImg2);
   model(model2);
   pop();
 
@@ -378,7 +382,8 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx7, 17.9, ob7);
+  translate(mx7, 8, ob7);
+  texture(textureImg2);
   model(model2);
   pop();
 
@@ -386,7 +391,8 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx8, 17.9, ob8);
+  translate(mx8, 8, ob8);
+  texture(textureImg2);
   model(model2);
   pop();
 
@@ -394,7 +400,8 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx9, 17.9, ob9);
+  translate(mx9, 8, ob9);
+  texture(textureImg2);
   model(model2);
   pop();
 
@@ -402,7 +409,8 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx10, 17.9, ob10);
+  translate(mx10, 8, ob10);
+  texture(textureImg2);
   model(model2);
   pop();
 }
