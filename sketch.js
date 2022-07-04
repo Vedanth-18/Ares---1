@@ -55,12 +55,12 @@ function preload(){
   M_Terrain = loadModel("Assets/3d Object/terrain.obj", true);
   rover = loadImage("Assets/Image/rover.gif");
   bg = loadImage("Assets/Image/Ares.webp");
-  textureImg = loadImage("Assets/Image/texture1.jpg");
-  textureImg2 = loadImage("Assets/Image/obst_texture.jpg");
+  textureImg = loadImage("Assets/Image/terr_texture.jpg");
+  textureImg2 = loadImage("Assets/Image/obst_texture.png");
   GenralT_1 = loadFont("Assets/Text/Ares.otf")  //Free commercial license
   ARESfont = loadFont("Assets/Text/Ares.ttf");  //Free commercial license
   controlsPanel = loadImage("Assets/Image/controls.jpg");
-  model2 = loadModel("Assets/3d Object/obstacleD.obj");
+  model2 = loadModel("Assets/3d Object/obstacle.obj");
   //model2 = loadModel("Assets/3d Object/T2.obj");
 }
 
@@ -85,22 +85,23 @@ function setup() {
   //Initialising object position
   ob1 = -5;
   //Initialising X positions of the obstacles
-  mx1 = 40; 
-  mx2 = 24;
-  mx3 = -1;
-  mx4 = 20;
-  mx5 = -4;
-  mx6 = 15; 
-  mx7 = -3;
-  mx8 = 23;
-  mx9 = 0;
-  mx10 = 0;
+  mx1 = 10; 
+  mx2 = -8;
+  mx3 = 3;
+  mx4 = -16;
+  mx5 = 10;
+  mx6 = -10; 
+  mx7 = 17;
+  mx8 = 0;
+  mx9 = 6;
+  mx10 = -17;
 
   //Defining Terrain Position
   Tpos = 0;
 }
 
 function draw() {  
+  console.log("frameR: " + frameR);
   //Setting background - Colour
   background("BLACK");
 
@@ -309,17 +310,17 @@ function createTerrains(){
    //console.log("Ratio: " + ratio)
    //console.log("frameR: " + frameR);
   
-if(frameR>0 && frameR%140 === 0){
-  mx1 = (random(-4, 27)); 
-  mx2 = (random(10, 22));
-  mx3 = (random(-4, 6));
-  mx4 = (random(-1, 20));
-  mx5 = (random(-4, 18));
-  mx6 = (random(10, 22)); 
-  mx7 = (random(0, 27));
-  mx8 = (random(0, 27));
-  mx9 = (random(-2, 27));
-  mx10 = (random(1, 27));
+if(frameR>0 && (frameR-100)%320 === 0){
+  mx1 = (random(5, 12)); 
+  mx2 = (random(-17, -13));
+  mx3 = (random(-5, 5));
+  mx4 = (random(-17, -13.5));
+  mx5 = (random(0, 6));
+  mx6 = (random(15, 17)); 
+  mx7 = (random(-17 ,17));
+  mx8 = (random(-17, 17));
+  mx9 = (random(-17, 17));
+  mx10 = (random(-17, 17));
 }
 
  //console.log("Length: " + modelArray.length);
@@ -327,7 +328,7 @@ if(frameR>0 && frameR%140 === 0){
   push();
   scale(15);
   fill("WHITE");
-  translate(mx1, 8, ob1);
+  translate(mx1, 7, ob1);
   noStroke();
   texture(textureImg2);
   model(model2);
@@ -336,7 +337,7 @@ if(frameR>0 && frameR%140 === 0){
   push();
   scale(15);
   //fill("WHITE");
-  translate(mx2, 8, ob2);
+  translate(mx2, 7, ob2);
   noStroke();
   texture(textureImg2);
   model(model2);
@@ -346,7 +347,7 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx3, 8, ob3);
+  translate(mx3, 7, ob3);
   texture(textureImg2);
   model(model2);
   pop();
@@ -355,7 +356,7 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx4, 8, ob4);
+  translate(mx4, 7, ob4);
   texture(textureImg2);
   model(model2);
   pop();
@@ -364,7 +365,7 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx5, 8, ob5);
+  translate(mx5, 7, ob5);
   texture(textureImg2);
   model(model2);
   pop();
@@ -373,7 +374,7 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx6, 8, ob6);
+  translate(mx6, 7, ob6);
   texture(textureImg2);
   model(model2);
   pop();
@@ -382,7 +383,7 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx7, 8, ob7);
+  translate(mx7, 7, ob7);
   texture(textureImg2);
   model(model2);
   pop();
@@ -391,7 +392,7 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx8, 8, ob8);
+  translate(mx8, 7, ob8);
   texture(textureImg2);
   model(model2);
   pop();
@@ -400,7 +401,7 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx9, 8, ob9);
+  translate(mx9, 7, ob9);
   texture(textureImg2);
   model(model2);
   pop();
@@ -409,7 +410,7 @@ if(frameR>0 && frameR%140 === 0){
   scale(15);
   fill("WHITE");
   noStroke();
-  translate(mx10, 8, ob10);
+  translate(mx10, 7, ob10);
   texture(textureImg2);
   model(model2);
   pop();
